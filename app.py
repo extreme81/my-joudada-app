@@ -24,9 +24,9 @@ def convert_pdf_page_to_pil(pdf_file, page_num):
     img_data = pix.tobytes("png")   # سنستخدم صيغة png لأنها أكثر استقراراً
     return Image.open(io.BytesIO(img_data)
 
-def analyze_image_online(img_bytes):
-    """إرسال الصورة إلى أقوى نموذج بصري أونلاين لضمان عدم الخطأ"""
-    # نستخدم نموذج gemini-1.5-pro لأنه الأقوى في معالجة الصور والنصوص العربية
+def analyze_image_online(pil_image):
+    """إرسال صورة PIL مباشرة إلى نموذج flash السريع لتجنب خطأ 503 Timeout"""
+    # استخدام النموذج السريع والخفيف جداً
     model = genai.GenerativeModel('gemini-1.5-flash')
     
     prompt = """
@@ -47,15 +47,11 @@ def analyze_image_online(img_bytes):
     """
     
     try:
-        # تجهيز الصورة لإرسالها للـ API
-        image_part = {"mime_type": "image/jpeg", "data": img_bytes}
-        
-        # طلب الاستجابة بصيغة JSON صارمة تمنع الخطأ في التوزيع
+        # إرسال كائن الصورة مباشرة كملف مرئي ممرر للنموذج وهو الحل الرسمي لمنع خطأ 503
         response = model.generate_content(
-            [prompt, image_part],
+            [prompt, pil_image],
             generation_config={"response_mime_type": "application/json", "temperature": 0.0}
         )
-        
         return json.loads(response.text.strip())
     except Exception as e:
         st.error(f"حدث خطأ أثناء الاتصال بالخادم: {e}")
