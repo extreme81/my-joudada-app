@@ -20,14 +20,14 @@ def convert_pdf_page_to_bytes(pdf_file, page_num):
     """تحويل صفحة الـ PDF (سواء كانت نص أو صورة ممسوحة) إلى بيانت صورة (Bytes)"""
     doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
     page = doc.load_page(page_num)
-    pix = page.get_pixmap(dpi=200)  # جودة عالية لضمان دقة القراءة
+    pix = page.get_pixmap(dpi=100)  # جودة عالية لضمان دقة القراءة
     img_data = pix.tobytes("jpeg")
     return img_data
 
 def analyze_image_online(img_bytes):
     """إرسال الصورة إلى أقوى نموذج بصري أونلاين لضمان عدم الخطأ"""
     # نستخدم نموذج gemini-1.5-pro لأنه الأقوى في معالجة الصور والنصوص العربية
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model = genai.GenerativeModel('gemini-1.5-flash')
     
     prompt = """
     أنت خبير تربوي ومساعد معلم دقيق جداً. انظر إلى هذه الصورة المرفقة (التي تمثل صفحة من كتاب مدرسي باللغة العربية) 
