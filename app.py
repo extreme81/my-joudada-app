@@ -110,29 +110,23 @@ if uploaded_file is not None:
     
     page_num = st.number_input(f"اختر رقم الصفحة التي تريد توليد جذاذتها (1-{total_pages}):", min_value=1, max_value=total_pages, value=1)
     
-    if st.button("تحليل وتوليد الخريطة الذهنية الآن ✨"):
-        with st.spinner("جاري تحويل الصفحة بصرياً وقراءتها بالذكاء الاصطناعي الخبير..."):
+   with st.spinner("جاري تحويل الصفحة بصرياً وقراءتها بالذكاء الاصطناعي الخبير..."):
             
-            # 1. تحويل الصفحة إلى صورة بدقة عالية لقراءة محتوى الصور
-            img_bytes = convert_pdf_page_to_bytes(uploaded_file, page_num - 1)
+            # 1. تحويل الصفحة إلى PIL Image
+            pil_img = convert_pdf_page_to_pil(uploaded_file, page_num - 1)
             
-            # 2. التحليل عبر الخادم السحابي الذكي (درجة الحرارة = 0 لضمان دقة البيانات والأرقام)
-            ai_data = analyze_image_online(img_bytes)
+            # 2. التحليل السريع بدون أخطاء ميتاداتا
+            ai_data = analyze_image_online(pil_img)
             
             if ai_data:
-                # 3. رسم البيانات فوق قالب صورتك المرجعية template.jpg المرفقة في مجلدك
+                # 3. رسم البيانات فوق قالب صورتك المرجعية
                 final_image = create_joudada_image("template.jpg", ai_data)
                 
                 # عرض النتيجة المذهلة للمستخدم
                 st.image(final_image, caption=f"الجذاذة التلقائية الناتجة للصفحة {page_num}", use_column_width=True)
                 
-                # إتاحة زر التنزيل الفوري بجودة عالية
+                # إمكانية التحميل
                 output_filename = f"joudada_page_{page_num}.jpg"
                 final_image.save(output_filename)
                 with open(output_filename, "rb") as file:
-                    st.download_button(
-                        label="📥 تحميل الصورة الجاهزة للطباعة",
-                        data=file,
-                        file_name=output_filename,
-                        mime="image/jpeg"
-                    )
+                    st.download_button(label="📥 تحميل الصورة الجاهزة للطباعة", data=file, file_name=output_filename, mime="image/jpeg")
