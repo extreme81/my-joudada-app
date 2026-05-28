@@ -16,13 +16,13 @@ else:
     # للاختبار المحلي السريع وأنت متصل بالإنترنت:
     genai.configure(api_key="ضع_مفتاح_Gemini_الخاص_بactive_هنا")
 
-def convert_pdf_page_to_bytes(pdf_file, page_num):
-    """تحويل صفحة الـ PDF (سواء كانت نص أو صورة ممسوحة) إلى بيانت صورة (Bytes)"""
+def convert_pdf_page_to_pil(pdf_file, page_num):
+    """تحويل صفحة الـ PDF إلى كائن صورة PIL حقيقي متوافق 100% مع Gemini"""
     doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
     page = doc.load_page(page_num)
-    pix = page.get_pixmap(dpi=100)  # جودة عالية لضمان دقة القراءة
-    img_data = pix.tobytes("jpeg")
-    return img_data
+    pix = page.get_pixmap(dpi=100)  # خففنا الجودة لسرعة خارقة
+    img_data = pix.tobytes("png")   # سنستخدم صيغة png لأنها أكثر استقراراً
+    return Image.open(io.BytesIO(img_data)
 
 def analyze_image_online(img_bytes):
     """إرسال الصورة إلى أقوى نموذج بصري أونلاين لضمان عدم الخطأ"""
