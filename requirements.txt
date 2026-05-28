@@ -1,0 +1,6 @@
+streamlit
+PyMuPDF
+Pillow
+google-generativeai
+arabic-reshaper
+python-bidi
